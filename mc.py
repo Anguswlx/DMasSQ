@@ -19,7 +19,7 @@ def get_hamiltonian(chi, action):
 def hmc(phi_0, S_0, k, l, n_steps=100):
     dt = 1 / n_steps
 
-    phi = phi_0
+    phi = copy.deepcopy(phi_0)
     chi = np.random.randn(*phi.shape)
     H_0 = get_hamiltonian(chi, S_0)
 
@@ -39,13 +39,12 @@ def hmc(phi_0, S_0, k, l, n_steps=100):
     return phi, S, True
 
 def mc(phi_0, S_0, k, l):
-    phi = phi_0
+    phi = copy.deepcopy(phi_0)
     chi = np.random.randn(*phi.shape)
-    H_0 = get_hamiltonian(chi, S_0)
 
     phi += chi
     S = get_action(phi, k, l)
-    dH = get_hamiltonian(chi, S) - H_0
+    dH = S - S_0
 
     if dH > 0:
         if np.random.rand() >= np.exp(-dH):
@@ -55,7 +54,7 @@ def mc(phi_0, S_0, k, l):
 def dm_mc(phi_0, S_0,logq_0, k, l, cfgs_df,logq_df):
 
     index = np.random.choice(cfgs_df.shape[0])
-    phi = cfgs_df[index]
+    phi = copy.deepcopy(cfgs_df[index])
     
     last_logp = - S_0
     last_logq = logq_0
